@@ -4,10 +4,12 @@ function getApiBase(): string {
     return raw.endsWith('/api') ? raw : `${raw}/api`;
   }
   if (typeof window !== 'undefined' && window.location.hostname.includes('render.com')) {
-    return 'https://neighbourflex-backend.onrender.com/api';
+    const backendHost = window.location.hostname.replace('frontend', 'backend');
+    return `https://${backendHost}/api`;
   }
   return '/api';
 }
+
 
 const API_BASE = getApiBase();
 

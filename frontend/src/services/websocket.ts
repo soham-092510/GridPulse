@@ -20,7 +20,8 @@ class WebSocketClient {
       const raw = import.meta.env.VITE_WS_URL.replace(/\/$/, '');
       wsUrl = raw.endsWith('/ws/live') ? raw : `${raw}/ws/live`;
     } else if (typeof window !== 'undefined' && window.location.hostname.includes('render.com')) {
-      wsUrl = 'wss://neighbourflex-backend.onrender.com/ws/live';
+      const backendHost = window.location.hostname.replace('frontend', 'backend');
+      wsUrl = `wss://${backendHost}/ws/live`;
     } else {
       const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
       wsUrl = `${protocol}//${window.location.host}/ws/live`;
