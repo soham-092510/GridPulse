@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  timescaledb:
+    image: timescale/timescaledb:latest-pg16
+    container_name: neighbourflex-timescaledb
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password123
+      POSTGRES_DB: neighbourflex
+    ports:
+      - "5432:5432"
+    volumes:
+      - timescaledb_data:/var/lib/postgresql/data
+      - ../backend/database/timescaledb_init.sql:/docker-entrypoint-initdb.d/01_init.sql
+    restart: unless-stopped
+
+  mosquitto:
+    image: eclipse-mosquitto:2
+    container_name: neighbourflex-mosquitto
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.backend
+    container_name: neighbourflex-backend
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://postgres:password123@timescaledb:5432/neighbourflex
+      - SYNC_DATABASE_URL=postgresql://postgres:password123@timescaledb:5432/neighbourflex
+      - MQTT_BROKER_HOST=mosquitto
+      - MQTT_BROKER_PORT=1883
+    ports:
+      - "8000:8000"
+    depends_on:
+      - timescaledb
+      - mosquitto
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.frontend
+    container_name: neighbourflex-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  timescaledb_data:

@@ -1,0 +1,45 @@
+# Dependencies
+node_modules/
+frontend/node_modules/
+.pnp
+.pnp.js
+
+# Build and Production outputs
+dist/
+frontend/dist/
+build/
+
+# Python
+__pycache__/
+backend/app/__pycache__/
+backend/app/*/__pycache__/
+backend/tests/__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+ENV/
+*.egg-info/
+
+# Databases & Local Logs
+*.sqlite3
+backend/*.db
+*.log
+
+# Pytest / Test Cache
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Environment & IDE
+.env
+.env.local
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
