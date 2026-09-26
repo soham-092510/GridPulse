@@ -27,8 +27,14 @@ services:
     autoDeploy: true
     buildCommand: cd frontend && npm install && npm run build
     staticPublishPath: ./frontend/dist
+    envVars:
+      - key: VITE_API_URL
+        value: https://neighbourflex-backend.onrender.com/api
+      - key: VITE_WS_URL
+        value: wss://neighbourflex-backend.onrender.com/ws/live
     routes:
       - type: rewrite
         source: /*
         destination: /index.html
+
 

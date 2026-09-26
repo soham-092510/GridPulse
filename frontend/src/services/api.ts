@@ -1,4 +1,16 @@
-const API_BASE = (import.meta.env.VITE_API_URL || '/api').replace(/\/$/, '');
+function getApiBase(): string {
+  if (import.meta.env.VITE_API_URL) {
+    const raw = import.meta.env.VITE_API_URL.replace(/\/$/, '');
+    return raw.endsWith('/api') ? raw : `${raw}/api`;
+  }
+  if (typeof window !== 'undefined' && window.location.hostname.includes('render.com')) {
+    return 'https://neighbourflex-backend.onrender.com/api';
+  }
+  return '/api';
+}
+
+const API_BASE = getApiBase();
+
 
 export async function fetchLiveState() {
   const res = await fetch(`${API_BASE}/measurements/live`);

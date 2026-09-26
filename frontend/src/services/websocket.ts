@@ -14,12 +14,21 @@ class WebSocketClient {
     }
 
     this.isConnecting = true;
-    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    // Use VITE_WS_URL if configured, otherwise default to local host / proxy
-    const wsUrl = import.meta.env.VITE_WS_URL || `${protocol}//${window.location.host}/ws/live`;
+    let wsUrl: string;
+
+    if (import.meta.env.VITE_WS_URL) {
+      const raw = import.meta.env.VITE_WS_URL.replace(/\/$/, '');
+      wsUrl = raw.endsWith('/ws/live') ? raw : `${raw}/ws/live`;
+    } else if (typeof window !== 'undefined' && window.location.hostname.includes('render.com')) {
+      wsUrl = 'wss://neighbourflex-backend.onrender.com/ws/live';
+    } else {
+      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      wsUrl = `${protocol}//${window.location.host}/ws/live`;
+    }
 
     try {
       this.ws = new WebSocket(wsUrl);
+
 
       this.ws.onopen = () => {
         this.isConnecting = false;
