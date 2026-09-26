@@ -79,6 +79,17 @@ app.include_router(what_if_router, prefix=settings.API_V1_STR)
 app.include_router(discom_router, prefix=settings.API_V1_STR)
 app.include_router(websocket_router)
 
+@app.get("/")
+async def root():
+    return {
+        "status": "ONLINE",
+        "service": settings.PROJECT_NAME,
+        "version": settings.VERSION,
+        "docs_url": "/docs",
+        "health_url": "/health",
+        "api_prefix": settings.API_V1_STR
+    }
+
 @app.get("/health")
 async def health_check():
     return {
@@ -87,3 +98,4 @@ async def health_check():
         "version": settings.VERSION,
         "mqtt_connected": mqtt_bridge.is_connected
     }
+
