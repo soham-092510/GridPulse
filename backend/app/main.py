@@ -50,12 +50,23 @@ async def lifespan(app: FastAPI):
     broadcaster_task.cancel()
     mqtt_bridge.stop()
 
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+from slowapi.middleware import SlowAPIMiddleware
+from app.core.limiter import limiter
+
+# Mount API Routers
 app = FastAPI(
     title=settings.PROJECT_NAME,
     version=settings.VERSION,
     description="Real-Time AI Neighbourhood Energy Intelligence & Flexibility Platform",
     lifespan=lifespan
 )
+
+# Register SlowAPI Rate Limiter
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+app.add_middleware(SlowAPIMiddleware)
 
 # Enable CORS for local Vite and production frontend
 app.add_middleware(
@@ -65,6 +76,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 # Mount API Routers
 app.include_router(devices_router, prefix=settings.API_V1_STR)

@@ -1,10 +1,13 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Request
 from app.models.schemas import WhatIfRequest, WhatIfResponse
+from app.core.limiter import limiter
 
 router = APIRouter(prefix="/what-if", tags=["What-If Simulation"])
 
 @router.post("/simulate", response_model=WhatIfResponse)
-async def simulate_scenario(req: WhatIfRequest):
+@limiter.limit("20/minute")
+async def simulate_scenario(request: Request, req: WhatIfRequest):
+
     """
     Simulates asset expansion and demand-response scenarios:
     - Expanded community battery capacity (e.g., 100 kWh -> 250 kWh)

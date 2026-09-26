@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Body, HTTPException
+from fastapi import APIRouter, Body, HTTPException, Request
 from datetime import datetime
 from typing import List, Dict, Any
 
@@ -6,11 +6,14 @@ from app.models.schemas import OptimizationActionDTO, OptimizationApprovalReques
 from app.engines.optimizer import flexibility_optimizer
 from app.simulation.digital_twin import digital_twin
 from app.ingestion.weather_service import weather_service
+from app.core.limiter import limiter
 
 router = APIRouter(prefix="/optimization", tags=["Optimization"])
 
 @router.get("/actions")
-async def get_optimization_actions():
+@limiter.limit("30/minute")
+async def get_optimization_actions(request: Request):
+
     """Returns currently pending recommended flexibility actions and past execution logs."""
     pending = list(flexibility_optimizer.pending_actions.values())
     history = flexibility_optimizer.action_history
