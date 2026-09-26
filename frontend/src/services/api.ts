@@ -1,4 +1,4 @@
-const API_BASE = '/api';
+const API_BASE = (import.meta.env.VITE_API_URL || '/api').replace(/\/$/, '');
 
 export async function fetchLiveState() {
   const res = await fetch(`${API_BASE}/measurements/live`);

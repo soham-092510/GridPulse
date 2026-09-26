@@ -15,8 +15,8 @@ class WebSocketClient {
 
     this.isConnecting = true;
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    // When using Vite dev proxy on port 3000, connect to ws://host:3000/ws/live (proxied to backend 8000)
-    const wsUrl = `${protocol}//${window.location.host}/ws/live`;
+    // Use VITE_WS_URL if configured, otherwise default to local host / proxy
+    const wsUrl = import.meta.env.VITE_WS_URL || `${protocol}//${window.location.host}/ws/live`;
 
     try {
       this.ws = new WebSocket(wsUrl);
